@@ -1,0 +1,552 @@
+/* ======================================== */
+/* :root - 全域顏色變數 */
+/* ======================================== */
+:root {
+    --bg: #0b1220;
+    --card: #0f1724;
+    --accent: #06b6d4;
+    --muted: #9aa4b2;
+}
+
+/* ======================================== */
+/* Body 與 HTML 基本樣式 */
+/* ======================================== */
+body, html {
+    margin: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans CJK TC", "Helvetica Neue", Arial;
+    background: linear-gradient(180deg, #071026 0%, #0f1724 100%);
+    color: #e6eef6;
+    overflow-x: hidden;
+}
+
+/* ======================================== */
+/* TopBar 頂部工具列 */
+/* ======================================== */
+.top-bar {
+    width: 100%;
+    background: #0f1724;
+    color: #c7f9fb;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    padding: 8px 16px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 500;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.page-title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.time-container {
+    font-size: 14px;
+    color: #c7f9fb;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* ======================================== */
+/* 側邊選單 Sidebar */
+/* ======================================== */
+.sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 200px;
+    height: calc(100vh - 60px);
+    background-color: rgba(15,23,36,0.95);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index: 400;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.sidebar.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    cursor: pointer;
+    padding: 10px 16px;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.sidebar ul li:hover {
+    color: var(--accent);
+}
+
+.sidebar ul li.active {
+    background-color: rgba(6, 182, 212, 0.2);
+    color: var(--accent);
+    border-radius: 4px;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.sidebar a.sidebar-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+}
+
+.sidebar a.sidebar-link:hover {
+    color: var(--accent);
+}
+
+/* 側邊欄登入資訊 */
+.sidebar-login-info {
+    margin-top: auto;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: white;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-login-info a {
+    color: var(--accent);
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.sidebar-login-info a:hover {
+    text-decoration: underline;
+}
+
+/* ======================================== */
+/* 主內容區 Main Content */
+/* ======================================== */
+.main-content {
+    margin-top: 2px;
+    padding: 10px;
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+}
+
+/* ======================================== */
+/* 卡片 Card */
+/* ======================================== */
+.card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255, 255, 255, 0.274);
+    border-radius: 12px;
+    color: #e6eef6;
+    margin-bottom: 12px;
+    padding: 10px;
+}
+
+.card-header {
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 16px;
+    color: #c7f9fb;
+}
+
+.toggle-icon {
+    font-weight: bold;
+    margin-left: 8px;
+    font-size: 16px;
+}
+
+.card-body {
+    padding: 10px;
+}
+
+.card-main {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.left-info,
+.right-info {
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: bold;
+}
+
+/* 收合動畫 */
+.card-detail {
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+}
+
+.card.collapsed .card-detail {
+    display: none;
+    max-height: 0;
+    opacity: 0;
+}
+
+/* ======================================== */
+/* 登入視窗 Login Modal */
+/* ======================================== */
+.login-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.login-box {
+    background: var(--card);
+    padding: 25px 20px;
+    border-radius: 12px;
+    width: 330px;
+    max-width: 90%;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}
+
+.login-box h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: var(--accent);
+}
+
+/* 表單欄位 */
+.form-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+}
+
+.form-group label {
+    width: 70px;
+    text-align: left;
+    flex-shrink: 0;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    flex: 1;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #1e293b;
+    background: #0b1220;
+    color: white;
+    font-size: 16px;
+    font-family: "Courier New", Courier, monospace;
+}
+
+/* CA 輸入欄，預設隱藏 */
+.ca-inputs {
+    display: none;
+}
+
+/* 勾選框水平排列 */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    margin-bottom: 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    flex-shrink: 0;
+}
+
+.checkbox-group label {
+    white-space: nowrap;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* 登入按鈕區塊水平排列 */
+.button-group {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.button-group button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background: var(--accent);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.button-group button:hover {
+    background: #0891b2;
+}
+
+/* 下拉選單 基本樣式 */
+#option-select {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 4px;
+}
+
+.selected-contract {
+    font-weight: bold;
+    color: var(--accent);
+}
+
+#selected-tx {
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 8px;
+}
+
+.card-header .card-title {
+    margin-right: 8px;
+}
+
+.header-price {
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: 4px;
+}
+
+.header-change {
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+.header-change.positive, .header-price.positive { color: #ff1a1a; }
+.header-change.negative, .header-price.negative { color: #0ca846; }
+.header-change.zero, .header-price.zero { color: var(--muted); }
+
+/* ======================================== */
+/* 下拉選單 + 排序按鈕 */
+/* ======================================== */
+.snapshot-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.snapshot-control select#option-select {
+    flex: 3;
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #0b1220;
+    color: white;
+}
+
+.snapshot-control button#snapshot-order-toggle {
+    flex: 1;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    color: #cfeff3;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s, color 0.3s;
+}
+
+.snapshot-control button#snapshot-order-toggle:hover {
+    background: #0891b2;
+    color: white;
+}
+
+/* ======================================== */
+/* 成交量核選（獨立在卡片外） */
+/* ======================================== */
+.volume-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    white-space: nowrap;
+}
+
+.volume-checkbox input[type="checkbox"] {
+    flex-shrink: 0;
+    transform: scale(0.9);
+}
+
+/* ======================================== */
+/* Snapshot 表格區 */
+/* ======================================== */
+.snapshot-table-container {
+    max-height: 350px;         /* 固定高度（滾動區） */
+    overflow-y: auto;          /* 僅內容滾動 */
+    overflow-x: auto;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 6px;
+    scroll-behavior: smooth;   /* 平滑滾動 */
+}
+
+/* 表格本體 */
+.snapshot-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255,255,255,0.02);
+    font-size: 13px;
+    text-align: center;
+}
+
+/* 表格表頭固定（Excel 凍結效果） */
+.snapshot-table thead th {
+    position: sticky;
+    top: 0;
+    background: rgba(15,23,36,0.98);
+    z-index: 5;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 8px;
+    color: var(--muted);
+    font-weight: 700;
+    backdrop-filter: blur(4px);  /* 微玻璃模糊感 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4); /* 加陰影 */
+}
+
+/* 表格內容 */
+.snapshot-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    text-align: center;
+    vertical-align: middle;
+}
+
+.snapshot-table tbody tr:hover {
+    background: rgba(255,255,255,0.04);
+}
+
+/* 高亮樣式 */
+.snapshot-highlight-min {
+    background: rgba(255, 26, 26, 0.08);
+    color: #ff7b7b;
+    font-weight: 700;
+}
+
+.snapshot-highlight-max {
+    background: rgba(10, 200, 70, 0.06);
+    color: #7ef2a3;
+    font-weight: 700;
+}
+
+#chip-table th, #chip-table td {
+  font-size: 14px;
+  padding: 6px;
+}
+
+/* 台指期籌碼卡片 內部方塊 */
+#chip-card #data-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    margin-top: -30px;   /* 往上移 10px，數值可調整 */
+}
+
+/* 只修改籌碼卡片 */
+#chip-card {
+    min-height: 140px;      /* 最小高度，可調整 */
+    max-height: 150px;      /* 最大高度 */
+}
+
+#chip-card .card-body {
+    padding: 10px; 
+    display: flex;
+    justify-content: center;      /* 水平置中 */
+    align-items: flex-start;      /* 方塊靠上 */
+    height: 100%;                 /* 內部方塊撐滿卡片高度 */
+}
+
+#chip-card #data-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 0;      /* 去掉上間距 */
+    margin-bottom: 0;   /* 去掉底部空白 */
+}
+
+.category-box {
+  flex: 1 1 60px;       /* 最小寬度 60px，可伸縮 */
+  max-width: 80px;       /* 最大寬度限制 */
+  min-width: 50px;
+  box-sizing: border-box;
+  padding: 6px;
+  margin: 4px;           /* 控制方塊間距 */
+  border-radius: 10px;   /* 圓角 */
+  background-color: #3A3A3A; /* 方塊底色 */
+  text-align: center;
+  transition: transform 0.3s, background-color 0.5s;
+}
+
+.category-box:hover { 
+  transform: scale(1.05); /* 懸停放大效果 */
+}
+
+.category-title {
+  display: block;       /* 確保每個標題獨占一行 */
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #c7f9fb;
+}
+
+.category-value {
+  display: block;       /* 確保獨占一行 */
+  font-size: 18px;
+  font-weight: bold;
+  padding: 6px;
+  border-radius: 5px;
+  background-color: #DC4525;
+  color: white;
+  text-align: center;   /* 文字置中 */
+  transition: background-color 0.5s, transform 0.3s;
+}

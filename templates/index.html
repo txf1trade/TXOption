@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>期權 Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* === 新增樣式 === */
+
+        /* 下拉選單與排序按鈕同行 */
+        .snapshot-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* 表格置中顯示 */
+        #snapshot-table th,
+        #snapshot-table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* 表頭凍結 */
+        #snapshot-table thead th {
+            position: sticky;
+            top: 0;
+            background: #f8f9fa;
+            z-index: 2;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+        }
+
+        /* 表格容器滾動 */
+        .snapshot-table-container {
+            max-height: 480px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        /* 按鈕樣式微調 */
+        #snapshot-order-toggle {
+            cursor: pointer;
+            padding: 4px 8px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            background: #e7f1ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 頂部工具列 -->
+    <div class="top-bar">
+        <div class="page-title">期權 Dashboard</div>
+        <div class="time-container"><span id="tw-time"></span></div>
+    </div>
+
+    <!-- 側邊選單 -->
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li class="active"><a href="/" class="sidebar-link">首頁</a></li>
+            <li>台指籌碼</li>
+            <li>選擇權資訊</li>
+        </ul>
+        <div class="sidebar-login-info">
+            <div id="login-status" class="login-status">尚未登入</div>
+            <a href="#" id="sidebar-login-link" class="sidebar-login-link">登入</a>
+        </div>
+        <div class="sidebar-footer"><span>© 2025 Dashboard</span></div>
+    </div>
+
+    <!-- 主內容 -->
+    <div class="main-content">
+        <!-- 卡片一：台指期資訊 -->
+        <div class="card" id="futures-card">
+            <div class="card-header">
+                <h5 class="card-title">台指期資訊</h5>
+                <span id="txf-header-price" class="header-price">-</span>
+                <span id="txf-header-change" class="header-change">-</span>
+                <span class="toggle-icon">-</span>
+            </div>
+            <div class="card-body card-detail">
+                <div class="card-main">
+                    <div class="left-info">
+                        <div>台指期價格：<span id="txf-value">-</span></div>
+                        <div>總量：<span id="total-volume">-</span></div>
+                    </div>
+                    <div class="right-info">
+                        <div>加權指數：<span id="twii-value">-</span></div>
+                        <div>櫃買指數：<span id="otc-value">-</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 台指期籌碼 卡片
+<div class="col-md-6 mb-3">
+  <div class="card position-relative" id="chip-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span>台指期籌碼</span>
+      <span class="toggle-icon">-</span>
+    </div>
+    <div class="card-body">
+      <div id="data-container">
+        
+        <div class="category-box" id="tank-category">
+          <span class="category-title">坦克</span>
+          <span id="tx_bvav" class="category-value">Loading..</span>
+        </div>
+        <div class="category-box" id="cannon-fodder-category">
+          <span class="category-title">炮灰</span>
+          <span id="mtx_tbta" class="category-value">Loading..</span>
+        </div>
+        <div class="category-box" id="guerrilla-category">
+          <span class="category-title">游擊隊</span>
+          <span id="mtx_bvav" class="category-value">Loading..</span>
+        </div>
+        <div class="category-box" id="guerrilla-tank">
+          <span class="category-title">方向</span>
+          <span id="mtx_p" class="category-value">Loading..</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+        <!-- 卡片三：選擇權資訊 -->
+        <div class="card collapsed" id="option-card">
+            <div class="card-header">
+                <h5 class="card-title">選擇權資訊</h5>
+                <div class="d-flex align-items-center">
+                    <span id="selected-tx" class="ms-2 text-info">-</span>
+                    <span class="toggle-icon" onclick="toggleCard('option-card')">-</span>
+                </div>
+            </div>
+            <div class="card-body card-detail">
+                <div class="card-main" style="flex-direction: column; gap: 8px;">
+                    <!-- 下拉選單 + 排序按鈕 -->
+                    <div class="snapshot-control">
+                        <select id="option-select">
+                            <option value="">請選擇合約</option>
+                        </select>
+                        <button id="snapshot-order-toggle" title="切換排列順序">排序: 降冪</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 下方：成交量核選 + Snapshot 表格 -->
+        <div id="snapshot-section" style="margin-top: 12px;">
+            <div class="volume-checkbox">
+                <input type="checkbox" id="toggle-volume" checked>
+                <label for="toggle-volume">顯示成交量</label>
+                <input type="checkbox" id="toggle-atm-view">
+                <label for="toggle-atm-view">固定價平列</label>
+            </div>
+
+            <div id="snapshot-table-container" class="snapshot-table-container">
+                <table id="snapshot-table" class="snapshot-table">
+                    <thead>
+                        <tr>
+                            <th>C量</th>
+                            <th>C價</th>
+                            <th>履約價</th>
+                            <th>P價</th>
+                            <th>P量</th>
+                            <th>價平</th>
+                            <th>T值</th>
+                            <th>周小台</th>
+                        </tr>
+                    </thead>
+                    <tbody id="snapshot-body"></tbody>
+                </table>
+                <div id="snapshot-empty" style="color:var(--muted); padding:8px;">尚無快照資料</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登入彈出視窗 -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-box">
+            <h2>登入系統</h2>
+            <div class="form-group">
+                <label for="api-key">API KEY</label>
+                <input type="text" id="api-key" autocomplete="on">
+            </div>
+            <div class="form-group">
+                <label for="secret-key">SEC KEY</label>
+                <input type="text" id="secret-key" autocomplete="on">
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="use-ca">
+                <label for="use-ca">啟用 CA</label>
+            </div>
+            <div class="form-group ca-inputs" style="display:none;">
+                <label for="ca-id">CA ID</label>
+                <input type="text" id="ca-id" autocomplete="on">
+            </div>
+            <div class="form-group ca-inputs" style="display:none;">
+                <label for="ca-password">CA PWD</label>
+                <input type="password" id="ca-password" autocomplete="off">
+            </div>
+            <div class="checkbox-group" style="white-space: nowrap;">
+                <input type="checkbox" id="remember-me">
+                <label for="remember-me">記住登入資訊</label>
+            </div>
+            <div class="button-group" style="flex-direction: row; gap: 10px;">
+                <button id="confirm-login">登入</button>
+                <button id="cancel-login">離開</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === 修改：成交量顯示控制，同步隱藏表頭 ===
+        document.addEventListener("DOMContentLoaded", () => {
+            const toggleVolume = document.getElementById("toggle-volume");
+            const snapshotTable = document.getElementById("snapshot-table");
+
+            toggleVolume.addEventListener("change", () => {
+                const show = toggleVolume.checked;
+                const ths = snapshotTable.querySelectorAll("thead th");
+                const trs = snapshotTable.querySelectorAll("tbody tr");
+
+                // C量 = index 0, P量 = index 4
+                [0, 4].forEach(i => {
+                    if (ths[i]) ths[i].style.display = show ? "" : "none";
+                    trs.forEach(tr => {
+                        if (tr.children[i]) tr.children[i].style.display = show ? "" : "none";
+                    });
+                });
+            });
+        });
+    </script>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
