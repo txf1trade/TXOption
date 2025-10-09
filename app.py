@@ -33,16 +33,14 @@ def login():
     if not api_key or not secret_key:
         return jsonify({"success": False, "message": "API Key 與 Secret Key 必填"})
 
-    if use_ca and (not ca_id or not ca_pwd):
-        return jsonify({"success": False, "message": "CA 資訊必填"})
-
+    # **修改：CA 欄位可選填，不影響登入**
     try:
         api = shioaji.Shioaji()
         api.login(api_key, secret_key)
         api_instance = api
 
         ca_status = "未啟用"
-        if use_ca:
+        if use_ca and ca_id and ca_pwd:
             try:
                 ca_path = os.path.join(os.path.dirname(__file__), "Sinopac.pfx")
                 api.activate_ca(ca_path=ca_path, ca_passwd=ca_pwd, person_id=ca_id)
@@ -50,6 +48,7 @@ def login():
             except Exception:
                 ca_status = "CA 未啟用/錯誤"
 
+        # 嘗試抓帳號
         account_id = "未知帳號"
         try:
             if api.futopt_account and api.futopt_account.account_id:
@@ -66,6 +65,7 @@ def login():
         return jsonify({"success": True, "person_id": account_id, "ca_status": ca_status})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
+
 
 # ===============================
 # 流量查詢
@@ -323,5 +323,5 @@ def logout():
 # 啟動 Flask
 # ===============================
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    port = int(os.environ.get("PORT", 10000))  # Render 會給你 PORT 環境變數
+    app.run(host="0.0.0.0", port=port)
